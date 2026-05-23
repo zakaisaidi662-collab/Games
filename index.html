@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+    <h1>GitHub HTML Runner</h1>
+    <p>Automatically finds all HTML files in a GitHub repo and lets you run them.</p>
+
+    <div id="status" class="loading">Loading HTML files...</div>
+    <div id="fileList"></div>
+
+    <script>
+        // =============================
+        // CHANGE THIS TO YOUR REPO
+        // =============================
+        const REPO = "USERNAME/REPO";
+
+        // Example:
+        // const REPO = "octocat/Hello-World";
+
+        const BRANCH = "main";
+
+        const statusEl = document.getElementById("status");
+        const fileListEl = document.getElementById("fileList");
+
+        async function loadRepoFiles() {
+            try {
+                const apiUrl = `https://api.github.com/repos/${REPO}/git/trees/${BRANCH}?recursive=1`;
+
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error("Could not load GitHub repo.");
+                }
+
+                const data = await response.json();
+
+                const htmlFiles = data.tree.filter(file =>
+                    file.path.toLowerCase().endsWith('.html')
+                );
+
+                statusEl.textContent = `Found ${htmlFiles.length} HTML file(s)`;
+
+                if (htmlFiles.length === 0) {
+                    statusEl.textContent = "No HTML files found.";
+                    return;
+                }
+
+                fileListEl.innerHTML = "";
+
+                htmlFiles.forEach(file => {
+                    const card = document.createElement("div");
+                    card.className = "card";
+
+                    const rawUrl = `https://rawcdn.githack.com/${REPO}/${BRANCH}/${file.path}`;
+
+                    card.innerHTML = `
+                        <div class="fileName">${file.path.split('/').pop()}</div>
+                        <div class="path">${file.path}</div>
+                        <button>Run HTML File</button>
+                    `;
+
+                    const button = card.querySelector("button");
+
+                    button.addEventListener("click", () => {
+                        window.open(rawUrl, '_blank');
+                    });
+
+                    fileListEl.appendChild(card);
+                });
+
+            } catch (err) {
+                statusEl.className = "error";
+                statusEl.textContent = err.message;
+                console.error(err);
+            }
+        }
+
+        loadRepoFiles();
+
+        // Auto refresh every 30 seconds
+        setInterval(loadRepoFiles, 30000);
+    </script>
+
+</body>
+</html>
