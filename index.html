@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub HTML Launcher</title>
+    <title>Zakai's video games</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -228,7 +227,7 @@
 <div class="app">
 
     <div class="sidebar">
-        <div class="title">GitHub Runner</div>
+        <div class="title">Game Runner</div>
 
         <div class="desc">
             Automatically detects every HTML file in your GitHub repository and launches it instantly inside the built-in viewer.
@@ -256,8 +255,8 @@
         </div>
 
         <div class="empty" id="emptyState">
-            <h2>Select a File</h2>
-            <p>Your HTML app will appear here.</p>
+            <h2>Select a game</h2>
+            <p>Your game file will appear here.</p>
         </div>
 
         <iframe id="viewerFrame" style="display:none;"></iframe>
@@ -271,10 +270,6 @@
     // CHANGE THIS TO YOUR GITHUB REPOSITORY
     // =========================================
     const REPO = "zakaisaidi662-collab/Games";
-
-    // Example:
-    // const REPO = "octocat/Hello-World";
-
     const BRANCH = "main";
 
     const statusEl = document.getElementById('status');
@@ -328,17 +323,25 @@
 
             const rawUrl = `https://rawcdn.githack.com/${REPO}/${BRANCH}/${file.path}`;
 
+            // Remove .html from displayed game name
+            const gameName = file.path
+                .split('/')
+                .pop()
+                .replace(/\.html$/i, '');
+
             card.innerHTML = `
-                <div class="name">${file.path.split('/').pop()}</div>
+                <div class="name">${gameName}</div>
+
                 <div class="path">${file.path}</div>
-                <button class="launch">Launch App</button>
+
+                <button class="launch">Launch Game</button>
             `;
 
             card.querySelector('.launch').addEventListener('click', () => {
                 iframe.src = rawUrl;
                 iframe.style.display = 'block';
                 emptyState.style.display = 'none';
-                currentFile.textContent = file.path;
+                currentFile.textContent = gameName;
             });
 
             fileListEl.appendChild(card);
